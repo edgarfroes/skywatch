@@ -1,0 +1,17 @@
+global_options:
+  freezed:
+    runs_before:
+      - hive_generator
+
+# global_options:
+#   hive_generator:
+#     runs_before:
+#       - freezed
+
+# targets:
+#   $default:
+#     builders:
+#       freezed:
+#         options:
+#           runs_before:
+#             - hive_generator
