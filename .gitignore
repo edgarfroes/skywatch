@@ -30,3 +30,5 @@ doc/api/
 *.g.dart
 
 custom_lint.log
+
+**/.DS_Store
