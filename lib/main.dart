@@ -1,19 +1,20 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skywatch/domain/entities/country.dart';
-import 'package:skywatch/domain/services/country_service.dart';
+import 'package:skywatch/domain/repositories/country_repository.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const ProviderScope(
+    child: MyApp(),
+  ));
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
-
-  final service = CountryService();
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         body: FutureBuilder(
-          future: service.getCountries(),
+          future: ref.read(countryRepositoryProvider).getCountries(),
           builder:
               (BuildContext context, AsyncSnapshot<List<Country>> snapshot) {
             if (!snapshot.hasData) {
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
                 final country = snapshot.data![index];
 
                 return Padding(
-                  padding: const EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(50),
                   child: Row(
                     children: [
                       CountryFlag.fromCountryCode(
