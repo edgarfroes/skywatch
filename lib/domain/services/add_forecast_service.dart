@@ -18,7 +18,7 @@ class AddForecastService {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 AddForecastService addForecastService(AddForecastServiceRef ref) {
   return AddForecastService(
     api: ref.read(

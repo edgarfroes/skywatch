@@ -17,7 +17,7 @@ class GetCountriesService {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 GetCountriesService getCountriesService(GetCountriesServiceRef ref) {
   return GetCountriesService(
     api: ref.read(

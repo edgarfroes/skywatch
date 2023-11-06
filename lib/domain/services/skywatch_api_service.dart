@@ -2,37 +2,61 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:skywatch/domain/repositories/logger_repository.dart';
 
 part 'skywatch_api_service.g.dart';
 
 class SkywatchApiService {
   final String apiUrl;
+  final LoggerRepository loggerRepository;
 
-  SkywatchApiService(this.apiUrl);
+  SkywatchApiService({
+    required this.apiUrl,
+    required this.loggerRepository,
+  });
+
+  Future<void> get fakeDelay => Future.delayed(const Duration(seconds: 1));
 
   Future<List<Map<String, dynamic>>> list({
     required String endpoint,
     Map<String, String>? queryParams,
   }) async {
-    final uri = Uri.parse('$apiUrl/$endpoint');
+    try {
+      await fakeDelay;
 
-    if (queryParams?.isNotEmpty == true) {
-      uri.queryParameters.addEntries(
-        queryParams!.keys.map((x) => MapEntry(x, queryParams[x] as String)),
+      final uri = Uri.parse('$apiUrl$endpoint');
+
+      if (queryParams?.isNotEmpty == true) {
+        uri.queryParameters.addEntries(
+          queryParams!.keys.map((x) => MapEntry(x, queryParams[x] as String)),
+        );
+      }
+
+      final response = await http.get(uri);
+
+      loggerRepository.info('HTTP Request:\n${response.request}');
+
+      _handleResponseErrors(response);
+
+      final result = jsonDecode(response.body);
+
+      if (result is! List) {
+        throw HttpInvalidResponseFormatException();
+      }
+
+      try {
+        return result.cast<Map<String, dynamic>>();
+      } catch (e) {
+        throw HttpInvalidResponseFormatException();
+      }
+    } catch (ex) {
+      loggerRepository.error(
+        'Error executing API get',
+        ex,
       );
+
+      rethrow;
     }
-
-    final response = await http.get(uri);
-
-    _handleResponseErrors(response);
-
-    final result = jsonDecode(response.body);
-
-    if (result! is List<Map<String, dynamic>>) {
-      throw HttpInvalidResponseFormatException();
-    }
-
-    return result;
   }
 
   void _handleResponseErrors(http.Response response) {
@@ -49,9 +73,11 @@ class SkywatchApiService {
     required Map<String, dynamic> data,
   }) async {
     final response = await http.post(
-      Uri.parse('$apiUrl/$endpoint'),
+      Uri.parse('$apiUrl$endpoint'),
       body: data,
     );
+
+    loggerRepository.info('HTTP Request:\n${response.request}');
 
     _handleResponseErrors(response);
   }
@@ -69,12 +95,13 @@ class HttpStatusCodeError implements Exception {
   });
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 SkywatchApiService skywatchApiService(SkywatchApiServiceRef ref) {
   return SkywatchApiService(
-    const String.fromEnvironment(
+    apiUrl: const String.fromEnvironment(
       'SKYWATCH_API_URL',
-      defaultValue: 'http://localhost:4331',
+      defaultValue: 'http://192.168.1.14:8080',
     ),
+    loggerRepository: ref.read(loggerRepositoryProvider),
   );
 }

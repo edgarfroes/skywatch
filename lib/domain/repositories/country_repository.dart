@@ -18,7 +18,7 @@ class CountryRepository {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 CountryRepository countryRepository(CountryRepositoryRef ref) {
   return CountryRepository(
     getCountriesService: ref.read(getCountriesServiceProvider),

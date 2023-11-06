@@ -9,13 +9,17 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   freezed_annotation: ^2.4.1
-  country_flags: ^2.1.1
   intl: ^0.18.1
   json_serializable: ^6.7.1
   http: ^1.1.0
   flutter_riverpod: ^2.4.5
   riverpod_annotation: ^2.3.0
   gap: ^3.0.1
+  auto_route: ^7.8.4
+  flutter_svg: ^2.0.9
+  cached_network_image: ^3.3.0
+  sliver_tools: ^0.2.12
+  fuzzywuzzy: ^1.1.6
   
 dev_dependencies:
   flutter_test:
@@ -27,9 +31,13 @@ dev_dependencies:
   custom_lint: ^0.5.6
   riverpod_lint: ^2.3.3
   flutter_launcher_icons: ^0.13.1
+  auto_route_generator: ^7.3.2
+  flutter_gen_runner: ^5.3.2
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/icon/
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -47,3 +55,8 @@ flutter_launcher_icons:
   macos:
     generate: true
     image_path: "assets/icon/icon.png"
+
+flutter_gen:
+  output: lib/presentation
+  integrations:
+    flutter_svg: true

@@ -20,7 +20,7 @@ class ForecastRepository {
     Country? country,
   }) async {
     final data = await _getForecastService(
-      countryCode: country?.countryCode,
+      countryCode: country?.code,
     );
 
     return data.map((x) => Forecast.fromJson(x)).toList();
@@ -31,7 +31,7 @@ class ForecastRepository {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 ForecastRepository forecastRepository(ForecastRepositoryRef ref) {
   return ForecastRepository(
     getForecastService: ref.read(getForecastServiceProvider),

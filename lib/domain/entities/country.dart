@@ -6,7 +6,7 @@ part 'country.g.dart';
 @freezed
 class Country with _$Country {
   const factory Country({
-    required String countryCode,
+    required String code,
     required String name,
   }) = _Country;
 
