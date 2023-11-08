@@ -13,14 +13,15 @@ class CountryFlag extends StatelessWidget {
   final double width;
   final VoidCallback? onErrorLoadingFlag;
 
+  static const kFlagAspectRatio = (3 / 2);
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: width,
       child: AspectRatio(
-        aspectRatio: 3 / 2,
+        aspectRatio: kFlagAspectRatio,
         child: Container(
-          width: width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(2),
           ),

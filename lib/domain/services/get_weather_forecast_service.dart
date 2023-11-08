@@ -1,12 +1,12 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/services/skywatch_api_service.dart';
 
-part 'get_forecast_service.g.dart';
+part 'get_weather_forecast_service.g.dart';
 
-class GetForecastService {
+class GetWeatherForecastService {
   final SkywatchApiService _api;
 
-  GetForecastService({
+  GetWeatherForecastService({
     required SkywatchApiService api,
   }) : _api = api;
 
@@ -25,8 +25,9 @@ class GetForecastService {
 }
 
 @Riverpod(keepAlive: true)
-GetForecastService getForecastService(GetForecastServiceRef ref) {
-  return GetForecastService(
+GetWeatherForecastService getWeatherForecastService(
+    GetWeatherForecastServiceRef ref) {
+  return GetWeatherForecastService(
     api: ref.read(
       skywatchApiServiceProvider,
     ),

@@ -4,7 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/entities/country.dart';
-import 'package:skywatch/presentation/ui/country_selection_button.dart';
+import 'package:skywatch/domain/entities/weather_forecast.dart';
+import 'package:skywatch/domain/repositories/weather_forecast_repository.dart';
+import 'package:skywatch/presentation/components/timeago.dart';
+import 'package:skywatch/presentation/components/weather_forecast_animation.dart';
+import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 
 part 'weather_forecast_tab.g.dart';
 
@@ -14,35 +18,100 @@ class WeatherForecastTabScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final weatherForecastAsyncValue = ref.watch(getWeatherForecastProvider);
+
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              ref.watch(selectedCountryProvider)?.name ?? 'WeatherForecastTab',
-            ),
-            const Gap(20),
-            SelectCountryButton(
-              onCountrySelect: (Country country) {
-                ref
-                    .read(selectedCountryProvider.notifier)
-                    .selectCountry(country);
-              },
-            ),
-          ],
+      appBar: AppBar(
+        title: const Text('Weather'),
+        scrolledUnderElevation: 0,
+      ),
+      body: RefreshIndicator(
+        onRefresh: () => ref.refresh(getWeatherForecastProvider.future),
+        child: weatherForecastAsyncValue.map(
+          data: (asyncValue) {
+            return CustomScrollView(
+              slivers: [
+                SliverList.builder(
+                  itemBuilder: (context, index) {
+                    final data = asyncValue.value[index];
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        WeatherForecastAnimation(
+                          classification: data.classification,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Opacity(
+                                opacity: 0.7,
+                                child: TimeAgo(date: data.createdAt),
+                              ),
+                              Text(
+                                data.description,
+                                style: context.textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                  itemCount: asyncValue.value.length,
+                ),
+              ],
+            );
+          },
+          error: (error) {
+            return Column(
+              children: [
+                Text('Error: $error'),
+                const Gap(20),
+                IconButton(
+                  onPressed: () =>
+                      ref.refresh(getWeatherForecastProvider.future),
+                  icon: const Icon(
+                    Icons.refresh,
+                  ),
+                ),
+              ],
+            );
+          },
+          loading: (_) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-@riverpod
-class SelectedCountry extends _$SelectedCountry {
-  @override
-  Country? build() => null;
+class SunnyIcon extends StatelessWidget {
+  const SunnyIcon({
+    super.key,
+  });
 
-  void selectCountry(Country country) {
-    state = country;
+  @override
+  Widget build(BuildContext context) {
+    return const Icon(
+      Icons.sunny,
+      size: 50,
+      color: Colors.orange,
+    );
   }
+}
+
+@riverpod
+Country? selectedCountry(SelectedCountryRef ref) => null;
+
+@riverpod
+Future<List<WeatherForecast>> getWeatherForecast(
+    GetWeatherForecastRef ref) async {
+  return await ref.read(weatherForecastRepositoryProvider).get(
+        country: ref.read(selectedCountryProvider),
+      );
 }

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/entities/country.dart';
+import 'package:skywatch/presentation/screens/ask_for_permission_screen.dart';
 import 'package:skywatch/presentation/screens/country_selection_screen.dart';
 import 'package:skywatch/presentation/screens/home_screen.dart';
 import 'package:skywatch/presentation/screens/loading_screen.dart';
@@ -31,12 +32,17 @@ class AppRouter extends _$AppRouter {
           ],
         ),
         AutoRoute(page: CountrySelectionRoute.page),
+        AutoRoute(page: AskForPermissionRoute.page),
       ];
 
   Future<void> goToHomeScreen() async => await replace(const HomeRoute());
 
-  Future<Country?> openCountrySelectionScreen() async {
-    final result = await push(const CountrySelectionRoute());
+  Future<Country?> openCountrySelectionScreen({
+    Country? selectedCountry,
+  }) async {
+    final result = await push(CountrySelectionRoute(
+      selectedCountry: selectedCountry,
+    ));
 
     if (result is! Country) {
       return null;

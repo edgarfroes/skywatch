@@ -20,6 +20,11 @@ dependencies:
   cached_network_image: ^3.3.0
   sliver_tools: ^0.2.12
   fuzzywuzzy: ^1.1.6
+  permission_handler: ^11.0.1
+  lottie: ^2.7.0
+  timeago: ^3.6.0
+  hooks_riverpod: ^2.4.5
+  flutter_hooks: ^0.20.3
   
 dev_dependencies:
   flutter_test:
@@ -38,6 +43,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icon/
+    - assets/lottie/
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -57,6 +63,6 @@ flutter_launcher_icons:
     image_path: "assets/icon/icon.png"
 
 flutter_gen:
-  output: lib/presentation
+  output: lib/presentation/components
   integrations:
-    flutter_svg: true
+    flutter_svg: false

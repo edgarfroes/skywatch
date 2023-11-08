@@ -8,8 +8,6 @@
 // ignore_for_file: directives_ordering,unnecessary_import,implicit_dynamic_list_literal,deprecated_member_use
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter/services.dart';
 
 class $AssetsIconGen {
   const $AssetsIconGen();
@@ -18,16 +16,53 @@ class $AssetsIconGen {
   AssetGenImage get iconPng => const AssetGenImage('assets/icon/icon.png');
 
   /// File path: assets/icon/icon.svg
-  SvgGenImage get iconSvg => const SvgGenImage('assets/icon/icon.svg');
+  String get iconSvg => 'assets/icon/icon.svg';
 
   /// List of all assets
   List<dynamic> get values => [iconPng, iconSvg];
+}
+
+class $AssetsLottieGen {
+  const $AssetsLottieGen();
+
+  /// File path: assets/lottie/clear-day.json
+  String get clearDay => 'assets/lottie/clear-day.json';
+
+  /// File path: assets/lottie/cloudy.json
+  String get cloudy => 'assets/lottie/cloudy.json';
+
+  /// File path: assets/lottie/overcast-day-rain.json
+  String get overcastDayRain => 'assets/lottie/overcast-day-rain.json';
+
+  /// File path: assets/lottie/overcast-rain.json
+  String get overcastRain => 'assets/lottie/overcast-rain.json';
+
+  /// File path: assets/lottie/overcast.json
+  String get overcast => 'assets/lottie/overcast.json';
+
+  /// File path: assets/lottie/partly-cloudy-day.json
+  String get partlyCloudyDay => 'assets/lottie/partly-cloudy-day.json';
+
+  /// File path: assets/lottie/snow.json
+  String get snow => 'assets/lottie/snow.json';
+
+  /// List of all assets
+  List<String> get values => [
+        clearDay,
+        cloudy,
+        overcastDayRain,
+        overcastRain,
+        overcast,
+        partlyCloudyDay,
+        snow
+      ];
 }
 
 class Assets {
   Assets._();
 
   static const $AssetsIconGen icon = $AssetsIconGen();
+  static const $AssetsLottieGen lottie = $AssetsLottieGen();
 }
 
 class AssetGenImage {
@@ -96,59 +131,6 @@ class AssetGenImage {
       _assetName,
       bundle: bundle,
       package: package,
-    );
-  }
-
-  String get path => _assetName;
-
-  String get keyName => _assetName;
-}
-
-class SvgGenImage {
-  const SvgGenImage(this._assetName);
-
-  final String _assetName;
-
-  SvgPicture svg({
-    Key? key,
-    bool matchTextDirection = false,
-    AssetBundle? bundle,
-    String? package,
-    double? width,
-    double? height,
-    BoxFit fit = BoxFit.contain,
-    AlignmentGeometry alignment = Alignment.center,
-    bool allowDrawingOutsideViewBox = false,
-    WidgetBuilder? placeholderBuilder,
-    String? semanticsLabel,
-    bool excludeFromSemantics = false,
-    SvgTheme theme = const SvgTheme(),
-    ColorFilter? colorFilter,
-    Clip clipBehavior = Clip.hardEdge,
-    @deprecated Color? color,
-    @deprecated BlendMode colorBlendMode = BlendMode.srcIn,
-    @deprecated bool cacheColorFilter = false,
-  }) {
-    return SvgPicture.asset(
-      _assetName,
-      key: key,
-      matchTextDirection: matchTextDirection,
-      bundle: bundle,
-      package: package,
-      width: width,
-      height: height,
-      fit: fit,
-      alignment: alignment,
-      allowDrawingOutsideViewBox: allowDrawingOutsideViewBox,
-      placeholderBuilder: placeholderBuilder,
-      semanticsLabel: semanticsLabel,
-      excludeFromSemantics: excludeFromSemantics,
-      theme: theme,
-      colorFilter: colorFilter,
-      color: color,
-      colorBlendMode: colorBlendMode,
-      clipBehavior: clipBehavior,
-      cacheColorFilter: cacheColorFilter,
     );
   }
 

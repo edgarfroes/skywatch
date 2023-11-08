@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:skywatch/app_router.dart';
 import 'package:skywatch/domain/entities/country.dart';
-import 'package:skywatch/presentation/ui/country_flag.dart';
+import 'package:skywatch/presentation/components/country_flag.dart';
+import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
+import 'package:skywatch/presentation/navigation/app_router.dart';
 
 part 'country_selection_button.g.dart';
 
@@ -37,28 +38,25 @@ class SelectCountryButton extends ConsumerWidget {
           ? const Text('tap to change')
           : const Text('tap to select'),
       onTap: () async {
-        final selectedCountry =
-            await ref.read(appRouterProvider).openCountrySelectionScreen();
+        final newSelectedCountry =
+            await ref.read(appRouterProvider).openCountrySelectionScreen(
+                  selectedCountry: selectedCountry,
+                );
 
-        if (selectedCountry != null) {
-          onCountrySelect(selectedCountry);
+        if (newSelectedCountry != null) {
+          onCountrySelect(newSelectedCountry);
 
           ref
               .read(selectedCountryProvider.notifier)
-              .selectCountry(selectedCountry);
+              .selectCountry(newSelectedCountry);
         }
       },
-      tileColor: Theme.of(context)
-          .colorScheme
-          .surfaceVariant
+      tileColor: context.colorScheme.surfaceVariant
           .withOpacity(selectedCountry != null ? 1 : 0.3),
       trailing: selectedCountry != null
           ? Icon(
               Icons.mode_edit_outline_outlined,
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurfaceVariant
-                  .withOpacity(0.3),
+              color: context.colorScheme.onSurfaceVariant.withOpacity(0.3),
             )
           : const Icon(Icons.chevron_right),
     );
