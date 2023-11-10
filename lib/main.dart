@@ -4,8 +4,6 @@ import 'package:skywatch/domain/repositories/logger_repository.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
 import 'package:skywatch/presentation/navigation/navigation_logger_observer.dart';
 
-// part 'main.g.dart';
-
 void main() {
   runApp(
     ProviderScope(

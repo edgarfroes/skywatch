@@ -1,14 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/entities/country.dart';
-import 'package:skywatch/domain/repositories/country_repository.dart';
+import 'package:skywatch/domain/providers/get_countries_provider.dart';
 import 'package:skywatch/presentation/components/country_search_list.dart';
+import 'package:skywatch/presentation/components/retry.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
-
-part 'country_selection_screen.g.dart';
 
 @RoutePage()
 class CountrySelectionScreen extends ConsumerWidget {
@@ -44,7 +42,7 @@ class CountrySelectionScreen extends ConsumerWidget {
                 padding: EdgeInsets.only(
                   bottom: context.safeAreaPadding.bottom,
                 ),
-                sliver: CountryList(
+                sliver: CountrySearchList(
                   selectedCountry: selectedCountry,
                   countries: data.value,
                   onTap: ref.read(appRouterProvider).pop,
@@ -64,15 +62,8 @@ class _Retry extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: IconButton(
-        onPressed: () => ref.refresh(getCountriesProvider.future),
-        icon: const Icon(Icons.refresh),
-      ),
+    return Retry(
+      onRetry: () => ref.refresh(getCountriesProvider.future),
     );
   }
 }
-
-@riverpod
-Future<List<Country>> getCountries(GetCountriesRef ref) =>
-    ref.read(countryRepositoryProvider).getCountries();

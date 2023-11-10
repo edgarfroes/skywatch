@@ -13,8 +13,8 @@ import 'package:sliver_tools/sliver_tools.dart';
 part 'country_search_list.freezed.dart';
 part 'country_search_list.g.dart';
 
-class CountryList extends HookConsumerWidget {
-  const CountryList({
+class CountrySearchList extends HookConsumerWidget {
+  const CountrySearchList({
     super.key,
     this.selectedCountry,
     required this.countries,

@@ -24,17 +24,13 @@ class SkywatchApiService {
     try {
       await fakeDelay;
 
-      final uri = Uri.parse('$apiUrl$endpoint');
-
-      if (queryParams?.isNotEmpty == true) {
-        uri.queryParameters.addEntries(
-          queryParams!.keys.map((x) => MapEntry(x, queryParams[x] as String)),
-        );
-      }
+      final uri = Uri.parse('$apiUrl$endpoint').replace(
+        queryParameters: queryParams,
+      );
 
       final response = await http.get(uri);
 
-      loggerRepository.info('HTTP Request:\n${response.request}');
+      loggerRepository.info('HTTP Request: ${response.request}');
 
       _handleResponseErrors(response);
 
@@ -77,7 +73,7 @@ class SkywatchApiService {
       body: data,
     );
 
-    loggerRepository.info('HTTP Request:\n${response.request}');
+    loggerRepository.info('HTTP Request: ${response.request}');
 
     _handleResponseErrors(response);
   }

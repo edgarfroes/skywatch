@@ -1,10 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/entities/country.dart';
-import 'package:skywatch/presentation/screens/ask_for_permission_screen.dart';
+import 'package:skywatch/presentation/providers/photos_permission_provider.dart';
+import 'package:skywatch/presentation/screens/ask_for_photos_permission_screen.dart';
 import 'package:skywatch/presentation/screens/country_selection_screen.dart';
 import 'package:skywatch/presentation/screens/home_screen.dart';
-import 'package:skywatch/presentation/screens/loading_screen.dart';
+import 'package:skywatch/presentation/screens/splash_screen.dart';
 import 'package:skywatch/presentation/tabs/upload_video_tab.dart';
 import 'package:skywatch/presentation/tabs/weather_forecast_tab.dart';
 
@@ -17,7 +18,7 @@ class AppRouter extends _$AppRouter {
   @override
   List<AutoRoute> get routes => [
         CustomRoute(
-          page: LoadingRoute.page,
+          page: SplashRoute.page,
           initial: true,
           fullscreenDialog: true,
           transitionsBuilder: TransitionsBuilders.noTransition,
@@ -32,19 +33,33 @@ class AppRouter extends _$AppRouter {
           ],
         ),
         AutoRoute(page: CountrySelectionRoute.page),
-        AutoRoute(page: AskForPermissionRoute.page),
+        AutoRoute(page: AskForPhotosPermissionRoute.page),
       ];
 
   Future<void> goToHomeScreen() async => await replace(const HomeRoute());
 
+  Future<PermissionStatus?> goToAskForPhotosPermissionScreen({
+    bool popWhenGranted = false,
+  }) =>
+      _pushWithResult(
+        AskForPhotosPermissionRoute(
+          popWhenGranted: popWhenGranted,
+        ),
+      );
+
   Future<Country?> openCountrySelectionScreen({
     Country? selectedCountry,
-  }) async {
-    final result = await push(CountrySelectionRoute(
-      selectedCountry: selectedCountry,
-    ));
+  }) =>
+      _pushWithResult(
+        CountrySelectionRoute(
+          selectedCountry: selectedCountry,
+        ),
+      );
 
-    if (result is! Country) {
+  Future<T?> _pushWithResult<T>(PageRouteInfo<dynamic> route) async {
+    final result = await push(route);
+
+    if (result is! T) {
       return null;
     }
 

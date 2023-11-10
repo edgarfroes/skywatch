@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skywatch/domain/entities/country.dart';
 import 'package:skywatch/presentation/components/country_flag.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
 
-part 'country_selection_button.g.dart';
-
-class SelectCountryButton extends ConsumerWidget {
+class SelectCountryButton extends HookConsumerWidget {
   const SelectCountryButton({
     super.key,
     required this.onCountrySelect,
@@ -20,55 +18,43 @@ class SelectCountryButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedCountry = ref.watch(selectedCountryProvider);
+    final selectedCountry = useState<Country?>(null);
 
     return ListTile(
-      leading: selectedCountry != null
-          ? CountryFlag(countryCode: selectedCountry.code)
+      leading: selectedCountry.value != null
+          ? CountryFlag(countryCode: selectedCountry.value!.code)
           : null,
-      title: selectedCountry != null
+      title: selectedCountry.value != null
           ? Text(
-              selectedCountry.name,
+              selectedCountry.value!.name,
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
               ),
             )
           : Text(label),
-      subtitle: selectedCountry != null
+      subtitle: selectedCountry.value != null
           ? const Text('tap to change')
           : const Text('tap to select'),
       onTap: () async {
         final newSelectedCountry =
             await ref.read(appRouterProvider).openCountrySelectionScreen(
-                  selectedCountry: selectedCountry,
+                  selectedCountry: selectedCountry.value,
                 );
 
         if (newSelectedCountry != null) {
           onCountrySelect(newSelectedCountry);
 
-          ref
-              .read(selectedCountryProvider.notifier)
-              .selectCountry(newSelectedCountry);
+          selectedCountry.value = newSelectedCountry;
         }
       },
       tileColor: context.colorScheme.surfaceVariant
-          .withOpacity(selectedCountry != null ? 1 : 0.3),
-      trailing: selectedCountry != null
+          .withOpacity(selectedCountry.value != null ? 1 : 0.3),
+      trailing: selectedCountry.value != null
           ? Icon(
               Icons.mode_edit_outline_outlined,
               color: context.colorScheme.onSurfaceVariant.withOpacity(0.3),
             )
           : const Icon(Icons.chevron_right),
     );
-  }
-}
-
-@riverpod
-class SelectedCountry extends _$SelectedCountry {
-  @override
-  Country? build() => null;
-
-  void selectCountry(Country country) {
-    state = country;
   }
 }

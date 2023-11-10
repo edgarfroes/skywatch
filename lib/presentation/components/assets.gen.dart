@@ -18,8 +18,21 @@ class $AssetsIconGen {
   /// File path: assets/icon/icon.svg
   String get iconSvg => 'assets/icon/icon.svg';
 
+  /// File path: assets/icon/icon_100.png
+  AssetGenImage get icon100 => const AssetGenImage('assets/icon/icon_100.png');
+
+  /// File path: assets/icon/icon_200.png
+  AssetGenImage get icon200 => const AssetGenImage('assets/icon/icon_200.png');
+
+  /// File path: assets/icon/icon_300.png
+  AssetGenImage get icon300 => const AssetGenImage('assets/icon/icon_300.png');
+
+  /// File path: assets/icon/icon_48.png
+  AssetGenImage get icon48 => const AssetGenImage('assets/icon/icon_48.png');
+
   /// List of all assets
-  List<dynamic> get values => [iconPng, iconSvg];
+  List<dynamic> get values =>
+      [iconPng, iconSvg, icon100, icon200, icon300, icon48];
 }
 
 class $AssetsLottieGen {
