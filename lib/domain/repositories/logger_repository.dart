@@ -14,6 +14,10 @@ class LoggerRepository extends Logger {
   final List<Logger> _loggers = [];
 
   void subscribe(Logger logger) {
+    if (_loggers.any((x) => x.runtimeType == logger.runtimeType)) {
+      return;
+    }
+
     _loggers.add(logger);
   }
 
