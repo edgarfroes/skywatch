@@ -1,0 +1,44 @@
+[
+  {
+    "countryCode": "BR",
+    "description": "It's crazy in here!",
+    "classification": "clear",
+    "temperature": 1,
+    "createdAt": "2023-11-07T19:27:00"
+  },
+  {
+    "countryCode": "BR",
+    "description": "It's crazy in here!",
+    "classification": "rainy",
+    "temperature": 1,
+    "createdAt": "2023-11-07T19:27:00"
+  },
+  {
+    "countryCode": "BR",
+    "description": "It's crazy in here!",
+    "classification": "partlyCloudy",
+    "temperature": 1,
+    "createdAt": "2023-11-06T19:27:00"
+  },
+  {
+    "countryCode": "BR",
+    "description": "It's crazy in here!",
+    "classification": "cloudy",
+    "temperature": 1,
+    "createdAt": "2023-11-05T19:27:00"
+  },
+  {
+    "countryCode": "BR",
+    "description": "It's crazy in here!",
+    "classification": "overcastDayRain",
+    "temperature": 1,
+    "createdAt": "2023-11-04T19:27:00"
+  },
+  {
+    "countryCode": "BR",
+    "description": "It's crazy in here!",
+    "classification": "snowy",
+    "temperature": 1,
+    "createdAt": "2023-11-03T19:27:00"
+  }
+]

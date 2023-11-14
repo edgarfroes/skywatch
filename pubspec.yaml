@@ -27,6 +27,7 @@ dependencies:
   flutter_hooks: ^0.20.3
   image_picker: ^1.0.4
   video_player: ^2.8.1
+  json_annotation: ^4.8.1
   
 dev_dependencies:
   flutter_test:
