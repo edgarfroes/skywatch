@@ -29,7 +29,7 @@ class UploadVideoTabScreen extends HookConsumerWidget {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Gap(20),
             SelectCountryButton(
@@ -40,10 +40,10 @@ class UploadVideoTabScreen extends HookConsumerWidget {
             const Gap(50),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: AspectRatio(
-                aspectRatio: 16 / 9,
-                child: pickedVideoFile.value == null
-                    ? Material(
+              child: pickedVideoFile.value == null
+                  ? AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Material(
                         clipBehavior: Clip.antiAlias,
                         borderRadius: BorderRadius.circular(10),
                         child: InkWell(
@@ -101,47 +101,47 @@ class UploadVideoTabScreen extends HookConsumerWidget {
                             ),
                           ),
                         ),
-                      )
-                    : Stack(
-                        children: [
-                          ValueListenableBuilder(
-                            valueListenable: pickedVideoFile,
-                            builder: (context, file, child) {
-                              if (file == null) {
-                                return const SizedBox.shrink();
-                              }
+                      ),
+                    )
+                  : Stack(
+                      children: [
+                        ValueListenableBuilder(
+                          valueListenable: pickedVideoFile,
+                          builder: (context, file, child) {
+                            if (file == null) {
+                              return const SizedBox.shrink();
+                            }
 
-                              return VideoPlayer(
-                                file: file,
-                              );
+                            return VideoPlayer(
+                              file: file,
+                            );
+                          },
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: IconButton(
+                            onPressed: () {
+                              pickedVideoFile.value = null;
                             },
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: IconButton(
-                              onPressed: () {
-                                pickedVideoFile.value = null;
-                              },
-                              icon: Container(
-                                decoration: BoxDecoration(
-                                  color: context.colorScheme.background
-                                      .withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                padding: const EdgeInsets.all(5),
-                                alignment: Alignment.center,
-                                child: Icon(
-                                  Icons.close_rounded,
-                                  size: 26,
-                                  color: context.colorScheme.onBackground,
-                                ),
+                            icon: Container(
+                              decoration: BoxDecoration(
+                                color: context.colorScheme.background
+                                    .withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              padding: const EdgeInsets.all(5),
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.close_rounded,
+                                size: 26,
+                                color: context.colorScheme.onBackground,
                               ),
                             ),
                           ),
-                        ],
-                      ),
-              ),
+                        ),
+                      ],
+                    ),
             ),
           ],
         ),

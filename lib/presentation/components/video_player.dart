@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -24,15 +25,20 @@ class VideoPlayer extends HookWidget {
     );
 
     return AspectRatio(
-      aspectRatio: controller.value.isInitialized
-          ? controller.value.aspectRatio
-          : (16 / 9),
+      aspectRatio: max(
+          1,
+          controller.value.isInitialized
+              ? controller.value.aspectRatio
+              : (16 / 9)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Stack(
           fit: StackFit.expand,
           children: [
-            video_player.VideoPlayer(controller),
+            Center(
+                child: AspectRatio(
+                    aspectRatio: controller.value.aspectRatio,
+                    child: video_player.VideoPlayer(controller))),
             Material(
               color: Colors.transparent,
               clipBehavior: Clip.antiAlias,
@@ -53,15 +59,26 @@ class VideoPlayer extends HookWidget {
                     }
 
                     return AnimatedOpacity(
-                      opacity: value.isPlaying ? 0.5 : 1,
+                      opacity: value.isPlaying ? 0.2 : 1,
                       duration: value.isPlaying
                           ? const Duration(milliseconds: 300)
                           : Duration.zero,
-                      child: Icon(
-                        value.isPlaying
-                            ? Icons.pause_circle_filled_sharp
-                            : Icons.play_arrow_sharp,
-                        size: 70,
+                      child: Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color:
+                                context.colorScheme.background.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          padding: const EdgeInsets.all(5),
+                          // alignment: Alignment.center,
+                          child: Icon(
+                            value.isPlaying
+                                ? Icons.pause_sharp
+                                : Icons.play_arrow_sharp,
+                            size: 50,
+                          ),
+                        ),
                       ),
                     );
                   },
