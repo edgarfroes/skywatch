@@ -1,11 +1,12 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/entities/country.dart';
-import 'package:skywatch/presentation/providers/photos_permission_provider.dart';
 import 'package:skywatch/presentation/screens/ask_for_photos_permission_screen.dart';
 import 'package:skywatch/presentation/screens/country_selection_screen.dart';
 import 'package:skywatch/presentation/screens/home_screen.dart';
 import 'package:skywatch/presentation/screens/splash_screen.dart';
+import 'package:skywatch/presentation/services/photos_permission_service.dart';
 import 'package:skywatch/presentation/tabs/upload_video_tab.dart';
 import 'package:skywatch/presentation/tabs/weather_forecast_tab.dart';
 
@@ -37,6 +38,9 @@ class AppRouter extends _$AppRouter {
       ];
 
   Future<void> goToHomeScreen() async => await replace(const HomeRoute());
+
+  Future<void> goToUploadVideoTab() async =>
+      await replace(const UploadVideoTabRoute());
 
   Future<PermissionStatus?> goToAskForPhotosPermissionScreen({
     bool popWhenGranted = false,

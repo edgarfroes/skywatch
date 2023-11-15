@@ -5,7 +5,7 @@ class CountryFlag extends StatelessWidget {
   const CountryFlag({
     super.key,
     required this.countryCode,
-    this.width = 32,
+    this.width = 40,
     this.onErrorLoadingFlag,
   });
 
@@ -17,6 +17,11 @@ class CountryFlag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final closestAvailableSize = [20, 40, 80, 160, 320, 640, 1280, 2560]
+            .where((x) => x > width)
+            .firstOrNull ??
+        80;
+
     return SizedBox(
       width: width,
       child: AspectRatio(
@@ -28,7 +33,7 @@ class CountryFlag extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: CachedNetworkImage(
             imageUrl:
-                'https://flagcdn.com/w80/${countryCode.toLowerCase()}.jpg',
+                'https://flagcdn.com/w$closestAvailableSize/${countryCode.toLowerCase()}.jpg',
             fit: BoxFit.cover,
             errorListener: (value) => onErrorLoadingFlag?.call(),
             placeholder: (context, url) => _CountryFlagPlaceholder(

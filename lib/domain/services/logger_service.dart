@@ -2,7 +2,7 @@
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'logger_repository.g.dart';
+part 'logger_service.g.dart';
 
 abstract class Logger {
   void info(String message);
@@ -10,7 +10,7 @@ abstract class Logger {
   void error(String message, [Object? exception]);
 }
 
-class LoggerRepository extends Logger {
+class LoggerService extends Logger {
   final List<Logger> _loggers = [];
 
   void subscribe(Logger logger) {
@@ -48,6 +48,4 @@ class LoggerRepository extends Logger {
 }
 
 @Riverpod(keepAlive: true)
-LoggerRepository loggerRepository(LoggerRepositoryRef ref) {
-  return LoggerRepository();
-}
+LoggerService logger(LoggerRef ref) => LoggerService();

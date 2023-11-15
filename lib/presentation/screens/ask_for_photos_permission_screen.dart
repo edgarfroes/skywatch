@@ -2,14 +2,15 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:skywatch/presentation/components/retry.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
-import 'package:skywatch/presentation/providers/photos_permission_provider.dart';
+import 'package:skywatch/presentation/services/photos_permission_service.dart';
 
 @RoutePage()
 class AskForPhotosPermissionScreen extends ConsumerWidget {
-  // ignore: use_key_in_widget_constructors
   const AskForPhotosPermissionScreen({
+    super.key,
     this.popWhenGranted = false,
   });
 
@@ -17,11 +18,11 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final photosPermission = ref.watch(photosPermissionProvider);
+    final photosPermission = ref.watch(photosPermissionServiceProvider);
 
     photosPermission.whenData((value) {
       if (value.isGranted) {
-        ref.read(appRouterProvider).pop();
+        ref.read(appRouterProvider).pop(value);
       }
     });
 
@@ -55,41 +56,43 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,
-                  child: photosPermission.map(data: (data) {
-                    final status = data.value;
+                  child: photosPermission.when(
+                    data: (status) {
+                      if (status.isGranted) {
+                        return const OutlinedButton(
+                          onPressed: null,
+                          child: Text('Permission granted'),
+                        );
+                      }
 
-                    if (status.isGranted) {
-                      return const OutlinedButton(
-                        onPressed: null,
-                        child: Text('Permission granted'),
-                      );
-                    }
+                      if (status.isPermanentlyDenied) {
+                        return OutlinedButton(
+                          onPressed: () async {
+                            ref
+                                .read(openAppPermissionSettingsProvider)
+                                .whenData((opened) {
+                              if (opened) {}
+                            });
+                          },
+                          child: const Text('Open app settings'),
+                        );
+                      }
 
-                    if (status.isPermanentlyDenied) {
                       return OutlinedButton(
-                        onPressed: () {
-                          ref.read(openAppPermissionSettingsProvider);
-                        },
-                        child: const Text('Open app settings'),
+                        onPressed: ref
+                            .read(photosPermissionServiceProvider.notifier)
+                            .request,
+                        child: const Text('Allow photos access'),
                       );
-                    }
-
-                    return OutlinedButton(
-                      onPressed:
-                          ref.read(photosPermissionProvider.notifier).request,
-                      child: const Text('Allow photos access'),
-                    );
-                  }, error: (data) {
-                    return const Text('error');
-                  }, loading: (data) {
-                    if (data.value?.isGranted == false) {
-                      return const OutlinedButton(
-                        onPressed: null,
-                        child: Text('Requesting permission'),
+                    },
+                    error: (ex, stackTrace) {
+                      return Retry(
+                        onRetry: () =>
+                            ref.refresh(photosPermissionServiceProvider),
                       );
-                    }
-                    return const CircularProgressIndicator();
-                  }),
+                    },
+                    loading: () => const CircularProgressIndicator(),
+                  ),
                 ),
               ),
               const Gap(50),
@@ -98,20 +101,5 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
         ),
       ),
     );
-
-    // return RefreshIndicator(
-    //   onRefresh: () async => await ref.refresh(requestPhotosPermissionHandlerProvider.future), child: null,
-    // );
-
-    // return FutureBuilder(
-    //   future: ref.watch(requestPhotosPermissionHandlerProvider),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.hasError) {
-    //       return Retry(onRetry: onRetry);
-    //     }
-    //   },
-    // );
-
-    // return Container();
   }
 }

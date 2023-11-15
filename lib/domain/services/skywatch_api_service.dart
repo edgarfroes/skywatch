@@ -2,17 +2,17 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:skywatch/domain/repositories/logger_repository.dart';
+import 'package:skywatch/domain/services/logger_service.dart';
 
 part 'skywatch_api_service.g.dart';
 
 class SkywatchApiService {
   final String apiUrl;
-  final LoggerRepository loggerRepository;
+  final LoggerService logger;
 
   SkywatchApiService({
     required this.apiUrl,
-    required this.loggerRepository,
+    required this.logger,
   });
 
   Future<void> get fakeDelay => Future.delayed(const Duration(seconds: 1));
@@ -30,7 +30,7 @@ class SkywatchApiService {
 
       final response = await http.get(uri);
 
-      loggerRepository.info('HTTP Request: ${response.request}');
+      logger.info('HTTP Request: ${response.request}');
 
       _handleResponseErrors(response);
 
@@ -46,7 +46,7 @@ class SkywatchApiService {
         throw HttpInvalidResponseFormatException();
       }
     } catch (ex) {
-      loggerRepository.error(
+      logger.error(
         'Error executing API get',
         ex,
       );
@@ -73,7 +73,7 @@ class SkywatchApiService {
       body: data,
     );
 
-    loggerRepository.info('HTTP Request: ${response.request}');
+    logger.info('HTTP Request: ${response.request}');
 
     _handleResponseErrors(response);
   }
@@ -98,6 +98,6 @@ SkywatchApiService skywatchApiService(SkywatchApiServiceRef ref) {
       'SKYWATCH_API_URL',
       defaultValue: 'http://192.168.1.14:8080',
     ),
-    loggerRepository: ref.read(loggerRepositoryProvider),
+    logger: ref.read(loggerProvider),
   );
 }

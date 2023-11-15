@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:skywatch/domain/providers/get_countries_provider.dart';
-import 'package:skywatch/domain/repositories/logger_repository.dart';
+import 'package:skywatch/domain/services/logger_service.dart';
 import 'package:skywatch/infrastructure/console_logger.dart';
 import 'package:skywatch/presentation/components/assets.gen.dart';
 import 'package:skywatch/presentation/components/retry.dart';
@@ -68,18 +67,16 @@ class _Loading extends StatelessWidget {
 
 @riverpod
 Future<void> loadInitialData(LoadInitialDataRef ref) async {
-  final loggerRepository = ref.read(loggerRepositoryProvider);
+  final logger = ref.read(loggerProvider);
 
   if (kDebugMode) {
-    loggerRepository.subscribe(ConsoleLogger());
+    logger.subscribe(ConsoleLogger());
   }
 
-  loggerRepository.info('Loading initial dependencies');
+  logger.info('Loading initial dependencies');
 
   // Fake app loading screen.
-  // await Future.delayed(const Duration(seconds: 2));
+  await Future.delayed(const Duration(seconds: 2));
 
-  await ref.read(getCountriesProvider.future);
-
-  loggerRepository.info('Loaded dependencies');
+  logger.info('Loaded dependencies');
 }

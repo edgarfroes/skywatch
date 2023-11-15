@@ -1,37 +1,42 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skywatch/domain/entities/country.dart';
 import 'package:skywatch/domain/entities/weather_forecast.dart';
-import 'package:skywatch/domain/repositories/weather_forecast_repository.dart';
+import 'package:skywatch/domain/services/get_weather_forecast_service.dart';
+import 'package:skywatch/presentation/components/async_value_absorb_pointer.dart';
 import 'package:skywatch/presentation/components/country_flag.dart';
 import 'package:skywatch/presentation/components/country_selection_dropdown.dart';
 import 'package:skywatch/presentation/components/retry.dart';
+import 'package:skywatch/presentation/components/skeleton_loader.dart';
 import 'package:skywatch/presentation/components/timeago.dart';
 import 'package:skywatch/presentation/components/weather_forecast_animation.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
-import 'package:skywatch/presentation/providers/haptic_feedback_provider.dart';
-
-part 'weather_forecast_tab.g.dart';
+import 'package:skywatch/presentation/navigation/app_router.dart';
+import 'package:skywatch/presentation/services/haptic_feedback_service.dart';
 
 @RoutePage()
-class WeatherForecastTabScreen extends ConsumerWidget {
+class WeatherForecastTabScreen extends HookConsumerWidget {
   const WeatherForecastTabScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final weatherForecastAsyncValue = ref.watch(getWeatherForecastProvider);
+    final selectedCountry = useState<Country?>(null);
+    final weatherForecastAsync = ref.watch(
+      getWeatherForecastServiceProvider(
+        countryCode: selectedCountry.value?.code,
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Weather'),
         scrolledUnderElevation: 0,
       ),
-      body: AbsorbPointer(
-        absorbing: weatherForecastAsyncValue.isLoading &&
-            !weatherForecastAsyncValue.hasError,
+      body: AsyncValueAbsorbPointer(
+        async: weatherForecastAsync,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -45,88 +50,61 @@ class WeatherForecastTabScreen extends ConsumerWidget {
                 children: [
                   CountrySelectionDropdown(
                     onCountrySelect: (Country? country) async {
-                      ref
-                          .read(weatherForecastTabSelectedCountryProvider
-                              .notifier)
-                          .selectCountry(country);
+                      selectedCountry.value = country;
 
-                      await _refresh(ref);
+                      await _refresh(ref, country);
                     },
                   ),
                 ],
               ),
             ),
             Expanded(
-              child: weatherForecastAsyncValue.map(
-                data: (asyncValue) {
-                  if (asyncValue.value.isEmpty) {
-                    return const Center(child: Text('No results'));
+              child: weatherForecastAsync.when(
+                data: (items) {
+                  if (items.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                              'Be the first to upload a new weather forecast video'),
+                          const Gap(20),
+                          OutlinedButton(
+                            onPressed:
+                                ref.read(appRouterProvider).goToUploadVideoTab,
+                            child: const Text('Upload video'),
+                          )
+                        ],
+                      ),
+                    );
                   }
 
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      await _refresh(ref);
+                  return WeatherForecastList(
+                    items: items,
+                    showCountryFlag: selectedCountry.value == null,
+                    onRefresh: () => _refresh(ref, selectedCountry.value),
+                    onTap: (WeatherForecast weatherForecast) {
+                      // TODO.
                     },
-                    child: CustomScrollView(
-                      slivers: [
-                        SliverList.builder(
-                          itemBuilder: (context, index) {
-                            final data = asyncValue.value[index];
+                  );
+                },
+                error: (ex, stackTrace) {
+                  if (weatherForecastAsync.isLoading ||
+                      weatherForecastAsync.isRefreshing) {
+                    return const _WeatherForecastTabScreenSkeletonLoader();
+                  }
 
-                            return InkWell(
-                              onTap: () {
-                                //
-                              },
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  WeatherForecastAnimation(
-                                    classification: data.classification,
-                                  ),
-                                  const Gap(20),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Opacity(
-                                          opacity: 0.7,
-                                          child: TimeAgo(date: data.createdAt),
-                                        ),
-                                        Text(
-                                          data.description,
-                                          style: context.textTheme.titleMedium,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (ref.watch(
-                                          weatherForecastTabSelectedCountryProvider) ==
-                                      null)
-                                    CountryFlag(
-                                      countryCode: data.countryCode,
-                                    ),
-                                  const Gap(20),
-                                ],
-                              ),
-                            );
-                          },
-                          itemCount: asyncValue.value.length,
-                        ),
-                      ],
+                  return Retry(
+                    title: 'An error has occurred, please try again',
+                    onRetry: () => ref.refresh(
+                      getWeatherForecastServiceProvider(
+                        countryCode: selectedCountry.value?.code,
+                      ).future,
                     ),
                   );
                 },
-                error: (error) {
-                  return Retry(
-                    onRetry: () =>
-                        ref.refresh(getWeatherForecastProvider.future),
-                  );
-                },
-                loading: (_) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                loading: () {
+                  return const _WeatherForecastTabScreenSkeletonLoader();
                 },
               ),
             ),
@@ -136,37 +114,112 @@ class WeatherForecastTabScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _refresh(WidgetRef ref) {
-    final hapticFeedbackService = ref.read(hapticFeedbackProvider);
+  Future<List<WeatherForecast>> _refresh(
+    WidgetRef ref,
+    Country? selectedCountry,
+  ) async {
+    final hapticFeedbackService = ref.read(hapticFeedbackServiceProvider);
 
     hapticFeedbackService.light();
 
-    final refreshable = ref.refresh(getWeatherForecastProvider.future);
+    final items = await ref.refresh(
+      getWeatherForecastServiceProvider(
+        countryCode: selectedCountry?.code,
+      ).future,
+    );
 
-    refreshable.whenComplete(hapticFeedbackService.success);
+    await hapticFeedbackService.success();
 
-    // ignore: unnecessary_cast
-    return refreshable as Future;
+    return items;
   }
 }
 
-@riverpod
-class WeatherForecastTabSelectedCountry
-    extends _$WeatherForecastTabSelectedCountry {
+class WeatherForecastList extends StatelessWidget {
+  const WeatherForecastList({
+    super.key,
+    required this.items,
+    required this.showCountryFlag,
+    required this.onRefresh,
+    required this.onTap,
+  });
+
+  final List<WeatherForecast> items;
+  final bool showCountryFlag;
+  final Future<void> Function() onRefresh;
+  final Function(WeatherForecast weatherForecast) onTap;
+
   @override
-  Country? build() => null;
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: CustomScrollView(
+        slivers: [
+          SliverList.builder(
+            itemBuilder: (context, index) {
+              final data = items[index];
 
-  void selectCountry(Country? country) {
-    state = country;
+              return InkWell(
+                onTap: () => onTap(data),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    WeatherForecastAnimation(
+                      classification: data.classification,
+                    ),
+                    const Gap(20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Opacity(
+                            opacity: 0.7,
+                            child: TimeAgo(date: data.createdAt),
+                          ),
+                          Text(
+                            data.description,
+                            style: context.textTheme.titleMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (showCountryFlag)
+                      CountryFlag(
+                        countryCode: data.countryCode,
+                      ),
+                    const Gap(20),
+                  ],
+                ),
+              );
+            },
+            itemCount: items.length,
+          ),
+        ],
+      ),
+    );
   }
 }
 
-@riverpod
-Future<List<WeatherForecast>> getWeatherForecast(
-    GetWeatherForecastRef ref) async {
-  final country = ref.watch(weatherForecastTabSelectedCountryProvider);
+class _WeatherForecastTabScreenSkeletonLoader extends StatelessWidget {
+  const _WeatherForecastTabScreenSkeletonLoader();
 
-  return await ref.read(weatherForecastRepositoryProvider).get(
-        country: country,
-      );
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SkeletonLoader(
+          items: [
+            SkeletonLoaderItem.row(
+              [
+                SkeletonLoaderItem.square(),
+                SkeletonLoaderItem.spacer(),
+                SkeletonLoaderItem.rectangle(),
+              ],
+            ),
+            SkeletonLoaderItem.spacer(),
+          ],
+        ),
+      ),
+    );
+  }
 }

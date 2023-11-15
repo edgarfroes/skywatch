@@ -3,14 +3,9 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart' as image_picker;
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:skywatch/domain/repositories/logger_repository.dart';
+import 'package:skywatch/domain/services/logger_service.dart';
 
-part 'video_picker_provider.g.dart';
-
-@riverpod
-VideoPicker videoPicker(VideoPickerRef ref) => VideoPicker(
-      logger: ref.read(loggerRepositoryProvider),
-    );
+part 'video_picker_service.g.dart';
 
 class VideoPicker {
   VideoPicker({
@@ -19,7 +14,7 @@ class VideoPicker {
 
   final _imagePicker = image_picker.ImagePicker();
 
-  final LoggerRepository logger;
+  final LoggerService logger;
 
   Future<File?> fromGalery() async {
     try {
@@ -48,3 +43,8 @@ class VideoPicker {
     }
   }
 }
+
+@riverpod
+VideoPicker videoPicker(VideoPickerRef ref) => VideoPicker(
+      logger: ref.read(loggerProvider),
+    );

@@ -1,24 +1,27 @@
 // ignore_for_file: avoid_print
 
-import 'package:skywatch/domain/repositories/logger_repository.dart';
+import 'package:skywatch/domain/services/logger_service.dart';
 
 class ConsoleLogger extends Logger {
   @override
   void info(String message) {
-    print('📘 $message');
+    _print('📘 $message');
   }
 
   @override
   void warning(String message) {
-    print('📙 $message');
+    _print('📙 $message');
   }
 
   @override
   void error(String message, [Object? exception]) {
-    print('📕 $message');
+    _print(
+      '📕 $message${exception != null ? '\n\nException: $exception' : ''}',
+    );
+  }
 
-    if (exception != null) {
-      print('Exception: $exception');
-    }
+  _print(String text) {
+    const separator = '===========================================';
+    print('\n\n$separator\n$text\n$separator\n\n');
   }
 }

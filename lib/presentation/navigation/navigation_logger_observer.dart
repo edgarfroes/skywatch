@@ -1,30 +1,30 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:skywatch/domain/repositories/logger_repository.dart';
+import 'package:skywatch/domain/services/logger_service.dart';
 
 class NavigationLoggerObserver extends AutoRouterObserver {
   NavigationLoggerObserver({
-    required this.loggerRepository,
+    required this.logger,
   });
 
-  final LoggerRepository loggerRepository;
+  final LoggerService logger;
 
   @override
   void didPush(Route route, Route? previousRoute) {
-    loggerRepository.info(
+    logger.info(
       'Navigated to screen ${route.settings.name}${route.settings.arguments != null ? '\nArguments: ${route.settings.arguments}' : ''}',
     );
   }
 
   @override
   void didInitTabRoute(TabPageRoute route, TabPageRoute? previousRoute) {
-    loggerRepository.info(
+    logger.info(
       'Navigated to Tab ${route.name}',
     );
   }
 
   @override
   void didChangeTabRoute(TabPageRoute route, TabPageRoute previousRoute) {
-    loggerRepository.info('Navigated to Tab ${route.name}');
+    logger.info('Navigated to Tab ${route.name}');
   }
 }

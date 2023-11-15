@@ -1,12 +1,12 @@
 import 'package:permission_handler/permission_handler.dart'
     as permission_handler;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:skywatch/domain/repositories/logger_repository.dart';
+import 'package:skywatch/domain/services/logger_service.dart';
 
-part 'photos_permission_provider.g.dart';
+part 'photos_permission_service.g.dart';
 
 @riverpod
-class PhotosPermission extends _$PhotosPermission {
+class PhotosPermissionService extends _$PhotosPermissionService {
   final _permission = permission_handler.Permission.photos;
 
   @override
@@ -14,7 +14,7 @@ class PhotosPermission extends _$PhotosPermission {
       _convertEnum(await _permission.status);
 
   Future<void> request() async {
-    final logger = ref.read(loggerRepositoryProvider);
+    final logger = ref.read(loggerProvider);
 
     logger.info('Requesting photos permission');
 
@@ -41,14 +41,14 @@ class PhotosPermission extends _$PhotosPermission {
 Future<bool> openAppPermissionSettings(
   OpenAppPermissionSettingsRef ref,
 ) async {
-  ref.read(loggerRepositoryProvider).info('Opening app settings');
+  ref.read(loggerProvider).info('Opening app settings');
 
   final opened = await permission_handler.openAppSettings();
 
   if (opened) {
-    ref.read(loggerRepositoryProvider).info('Opened app settings succesfully');
+    ref.read(loggerProvider).info('Opened app settings succesfully');
   } else {
-    ref.read(loggerRepositoryProvider).error('Error opening app settings');
+    ref.read(loggerProvider).error('Error opening app settings');
   }
 
   return opened;

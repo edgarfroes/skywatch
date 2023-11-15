@@ -31,14 +31,21 @@ class VideoPlayer extends HookWidget {
               ? controller.value.aspectRatio
               : (16 / 9)),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(5),
         child: Stack(
           fit: StackFit.expand,
           children: [
+            const Positioned.fill(
+              child: ColoredBox(color: Colors.black),
+            ),
             Center(
-                child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: video_player.VideoPlayer(controller))),
+              child: AspectRatio(
+                aspectRatio: controller.value.aspectRatio,
+                child: video_player.VideoPlayer(
+                  controller,
+                ),
+              ),
+            ),
             Material(
               color: Colors.transparent,
               clipBehavior: Clip.antiAlias,
@@ -48,6 +55,7 @@ class VideoPlayer extends HookWidget {
                     controller.pause();
                     return;
                   }
+
                   controller.play();
                 },
                 child: ValueListenableBuilder(
@@ -71,7 +79,6 @@ class VideoPlayer extends HookWidget {
                             borderRadius: BorderRadius.circular(100),
                           ),
                           padding: const EdgeInsets.all(5),
-                          // alignment: Alignment.center,
                           child: Icon(
                             value.isPlaying
                                 ? Icons.pause_sharp
@@ -85,30 +92,30 @@ class VideoPlayer extends HookWidget {
                 ),
               ),
             ),
-            Positioned(
-              left: 0,
-              bottom: 0,
-              right: 0,
-              child: ValueListenableBuilder(
-                valueListenable: controller,
-                builder: (
-                  BuildContext context,
-                  VideoPlayerValue value,
-                  Widget? child,
-                ) {
-                  if (!value.isInitialized) {
+            if (controller.value.isInitialized)
+              Positioned(
+                left: 0,
+                bottom: 0,
+                right: 0,
+                child: Builder(builder: (context) {
+                  if (!controller.value.isInitialized) {
                     return const SizedBox.shrink();
                   }
 
-                  return LinearProgressIndicator(
-                    value: !value.isInitialized
-                        ? 0
-                        : value.position.inMilliseconds /
-                            value.duration.inMilliseconds,
+                  return AnimatedBuilder(
+                    animation: controller,
+                    builder: (
+                      BuildContext context,
+                      Widget? child,
+                    ) {
+                      return LinearProgressIndicator(
+                        value: controller.value.position.inMilliseconds /
+                            controller.value.duration.inMilliseconds,
+                      );
+                    },
                   );
-                },
+                }),
               ),
-            ),
             Positioned(
               right: 0,
               bottom: 5,
@@ -202,7 +209,6 @@ class _VideoPlayerControllerState
   _startVideoOnInitialState() async {
     await controller.setLooping(true);
     await controller.setVolume(0);
-    // await controller.setPlaybackSpeed(2);
     await controller.play();
   }
 

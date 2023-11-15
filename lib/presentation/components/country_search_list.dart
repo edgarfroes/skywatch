@@ -3,15 +3,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/entities/country.dart';
-import 'package:skywatch/domain/repositories/logger_repository.dart';
+import 'package:skywatch/domain/services/logger_service.dart';
 import 'package:skywatch/presentation/components/country_flag.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 part 'country_search_list.freezed.dart';
-part 'country_search_list.g.dart';
 
 class CountrySearchList extends HookConsumerWidget {
   const CountrySearchList({
@@ -29,16 +27,15 @@ class CountrySearchList extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filteredText = ref.watch(textFilterProvider)?.trim().toLowerCase();
-    final filterTextEditingController = useTextEditingController();
+    final filteredText = useState<String>('');
 
     final resultsWithSimilarities = countries
         .map(
           (x) => SimilarResult(
             object: x,
-            similarity: filteredText?.isNotEmpty == true
+            similarity: filteredText.value.isNotEmpty == true
                 ? partialRatio(
-                    filteredText!,
+                    filteredText.value,
                     x.name.toLowerCase(),
                   )
                 : 0,
@@ -82,8 +79,7 @@ class CountrySearchList extends HookConsumerWidget {
                 bottom: 20,
               ),
               child: TextField(
-                onChanged: ref.read(textFilterProvider.notifier).update,
-                controller: filterTextEditingController,
+                onChanged: (value) => filteredText.value = value,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
@@ -120,12 +116,11 @@ class CountrySearchList extends HookConsumerWidget {
             ),
           ),
         ],
-        if (searchResult.isEmpty &&
-            filterTextEditingController.text.trim().isNotEmpty)
-          const SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        if (searchResult.isEmpty && filteredText.value.trim().isNotEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.all(20),
             sliver: SliverToBoxAdapter(
-              child: Text('Country not found'),
+              child: Text('Country "${filteredText.value}" not found'),
             ),
           ),
         if (currentCountry != null)
@@ -151,14 +146,6 @@ class CountrySearchList extends HookConsumerWidget {
       ],
     );
   }
-}
-
-@riverpod
-class TextFilter extends _$TextFilter {
-  @override
-  String? build() => null;
-
-  void update(String? text) => state = text;
 }
 
 @freezed
@@ -195,7 +182,7 @@ class _CountryWidget extends ConsumerWidget {
           width: flagSize,
           countryCode: country.code,
           onErrorLoadingFlag: () {
-            ref.read(loggerRepositoryProvider).error(
+            ref.read(loggerProvider).error(
                   'Couldn\'t load flag for country ${country.name}',
                   ErrorLoadingCountryFlagException(),
                 );

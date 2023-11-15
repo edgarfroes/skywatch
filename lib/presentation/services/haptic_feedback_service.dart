@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:skywatch/domain/repositories/logger_repository.dart';
+import 'package:skywatch/domain/services/logger_service.dart';
 
-part 'haptic_feedback_provider.g.dart';
+part 'haptic_feedback_service.g.dart';
 
-class HapticFeedbackProvider {
-  final LoggerRepository logger;
+class HapticFeedbackService {
+  final LoggerService logger;
 
-  HapticFeedbackProvider({
+  HapticFeedbackService({
     required this.logger,
   });
 
@@ -42,7 +42,7 @@ class HapticFeedbackProvider {
 }
 
 @riverpod
-HapticFeedbackProvider hapticFeedback(HapticFeedbackRef ref) =>
-    HapticFeedbackProvider(
-      logger: ref.read(loggerRepositoryProvider),
+HapticFeedbackService hapticFeedbackService(HapticFeedbackServiceRef ref) =>
+    HapticFeedbackService(
+      logger: ref.read(loggerProvider),
     );
