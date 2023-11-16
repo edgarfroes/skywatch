@@ -9,8 +9,9 @@ import 'package:skywatch/domain/services/get_weather_forecast_service.dart';
 import 'package:skywatch/presentation/components/async_value_absorb_pointer.dart';
 import 'package:skywatch/presentation/components/country_flag.dart';
 import 'package:skywatch/presentation/components/country_selection_dropdown.dart';
-import 'package:skywatch/presentation/components/retry.dart';
+import 'package:skywatch/presentation/components/retry_button.dart';
 import 'package:skywatch/presentation/components/skeleton_loader.dart';
+import 'package:skywatch/presentation/components/system_localization_selector.dart';
 import 'package:skywatch/presentation/components/timeago.dart';
 import 'package:skywatch/presentation/components/weather_forecast_animation.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
@@ -32,8 +33,12 @@ class WeatherForecastTabScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Weather'),
+        title: Text(context.l10n.weather_forecast_tab_title),
         scrolledUnderElevation: 0,
+        actions: const [
+          SystemLocalizationSelector(),
+          Gap(20),
+        ],
       ),
       body: AsyncValueAbsorbPointer(
         async: weatherForecastAsync,
@@ -66,13 +71,16 @@ class WeatherForecastTabScreen extends HookConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                              'Be the first to upload a new weather forecast video'),
+                          Text(
+                            context.l10n.weather_forecast_tab_empty_result,
+                          ),
                           const Gap(20),
                           OutlinedButton(
                             onPressed:
                                 ref.read(appRouterProvider).goToUploadVideoTab,
-                            child: const Text('Upload video'),
+                            child: Text(
+                              context.l10n.weather_forecast_tab_upload_video,
+                            ),
                           )
                         ],
                       ),
@@ -94,8 +102,8 @@ class WeatherForecastTabScreen extends HookConsumerWidget {
                     return const _WeatherForecastTabScreenSkeletonLoader();
                   }
 
-                  return Retry(
-                    title: 'An error has occurred, please try again',
+                  return RetryButton(
+                    title: context.l10n.weather_forecast_tab_error,
                     onRetry: () => ref.refresh(
                       getWeatherForecastServiceProvider(
                         countryCode: selectedCountry.value?.code,

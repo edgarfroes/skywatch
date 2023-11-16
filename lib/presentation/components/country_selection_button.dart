@@ -10,11 +10,11 @@ class SelectCountryButton extends HookConsumerWidget {
   const SelectCountryButton({
     super.key,
     required this.onCountrySelect,
-    this.label = 'Country',
+    this.label,
   });
 
   final Function(Country country) onCountrySelect;
-  final String label;
+  final String? label;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,10 +31,12 @@ class SelectCountryButton extends HookConsumerWidget {
                 fontWeight: FontWeight.w500,
               ),
             )
-          : Text(label),
-      subtitle: selectedCountry.value != null
-          ? const Text('tap to change')
-          : const Text('tap to select'),
+          : Text(label ?? context.l10n.country_selection_button_label),
+      subtitle: Text(
+        selectedCountry.value != null
+            ? context.l10n.country_selection_button_tap_to_change
+            : context.l10n.country_selection_button_tap_to_select,
+      ),
       onTap: () async {
         final newSelectedCountry =
             await ref.read(appRouterProvider).openCountrySelectionScreen(

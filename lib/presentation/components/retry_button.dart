@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 
-class Retry extends StatelessWidget {
-  const Retry({
+class RetryButton extends StatelessWidget {
+  const RetryButton({
     super.key,
     required this.onRetry,
     this.title,
@@ -33,7 +33,7 @@ class Retry extends StatelessWidget {
               ),
               const Gap(20),
               Text(
-                title ?? 'Try again',
+                title ?? context.l10n.retry_button_try_again,
                 style: context.textTheme.titleMedium,
               ),
             ],

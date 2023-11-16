@@ -42,7 +42,10 @@ class _TimeAgoState extends State<TimeAgo> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      timeago.format(widget.date),
+      timeago.format(
+        widget.date,
+        locale: Localizations.localeOf(context).languageCode,
+      ),
       style: widget.textStyle != null
           ? widget.textStyle!.merge(context.textTheme.labelSmall)
           : context.textTheme.labelSmall,

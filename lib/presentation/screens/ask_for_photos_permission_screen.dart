@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:skywatch/presentation/components/retry.dart';
+import 'package:skywatch/presentation/components/retry_button.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
 import 'package:skywatch/presentation/services/photos_permission_service.dart';
@@ -37,13 +37,13 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
             children: [
               const Spacer(),
               Text(
-                'Permission required',
+                context.l10n.photo_permission_screen_permission_title,
                 style: context.textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
               const Gap(50),
               Text(
-                'We need your permission to access photo library',
+                context.l10n.photo_permission_screen_permission_description,
                 style: context.textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -59,9 +59,10 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
                   child: photosPermission.when(
                     data: (status) {
                       if (status.isGranted) {
-                        return const OutlinedButton(
+                        return OutlinedButton(
                           onPressed: null,
-                          child: Text('Permission granted'),
+                          child: Text(context
+                              .l10n.photo_permission_screen_permission_granted),
                         );
                       }
 
@@ -74,7 +75,10 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
                               if (opened) {}
                             });
                           },
-                          child: const Text('Open app settings'),
+                          child: Text(
+                            context.l10n
+                                .photo_permission_screen_permission_open_app_settings,
+                          ),
                         );
                       }
 
@@ -82,11 +86,14 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
                         onPressed: ref
                             .read(photosPermissionServiceProvider.notifier)
                             .request,
-                        child: const Text('Allow photos access'),
+                        child: Text(
+                          context.l10n
+                              .photo_permission_screen_permission_allow_photos_access,
+                        ),
                       );
                     },
                     error: (ex, stackTrace) {
-                      return Retry(
+                      return RetryButton(
                         onRetry: () =>
                             ref.refresh(photosPermissionServiceProvider),
                       );

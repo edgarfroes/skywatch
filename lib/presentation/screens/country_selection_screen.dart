@@ -5,10 +5,12 @@ import 'package:skywatch/domain/entities/country.dart';
 import 'package:skywatch/domain/services/get_countries_service.dart';
 import 'package:skywatch/presentation/components/async_value_absorb_pointer.dart';
 import 'package:skywatch/presentation/components/country_search_list.dart';
-import 'package:skywatch/presentation/components/retry.dart';
+import 'package:skywatch/presentation/components/retry_button.dart';
 import 'package:skywatch/presentation/components/skeleton_loader.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
+import 'package:skywatch/presentation/l10n/l10n.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
+import 'package:skywatch/presentation/services/current_locale_service.dart';
 
 @RoutePage()
 class CountrySelectionScreen extends ConsumerWidget {
@@ -21,7 +23,10 @@ class CountrySelectionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final countriesAsync = ref.watch(getCountriesServiceProvider);
+    final currentLocale = ref.watch(currentLocaleServiceProvider);
+
+    final countriesAsync =
+        ref.watch(getCountriesServiceProvider(currentLocale));
 
     final appRouter = ref.read(appRouterProvider);
 
@@ -32,9 +37,10 @@ class CountrySelectionScreen extends ConsumerWidget {
           loading: (_) => const _CountrySelectionScreenSkeletonLoader(),
           data: (AsyncData<List<Country>> data) {
             if (data.value.isEmpty) {
-              return Retry(
-                title: 'We could not find any countries, please try again',
-                onRetry: () => ref.refresh(getCountriesServiceProvider),
+              return RetryButton(
+                title: context.l10n.country_selection_screen_empty_result,
+                onRetry: () =>
+                    ref.refresh(getCountriesServiceProvider(currentLocale)),
               );
             }
 
@@ -43,7 +49,10 @@ class CountrySelectionScreen extends ConsumerWidget {
               slivers: [
                 SliverAppBar(
                   pinned: true,
-                  title: Text(appRouter.topRoute.pageTitle ?? 'Select country'),
+                  title: Text(
+                    appRouter.topRoute.pageTitle ??
+                        Localization.current.country_selection_screen_title,
+                  ),
                   scrolledUnderElevation: 0,
                 ),
                 SliverPadding(
@@ -64,8 +73,10 @@ class CountrySelectionScreen extends ConsumerWidget {
               return const _CountrySelectionScreenSkeletonLoader();
             }
 
-            return Retry(
-              onRetry: () => ref.refresh(getCountriesServiceProvider.future),
+            return RetryButton(
+              onRetry: () => ref.refresh(
+                getCountriesServiceProvider(currentLocale).future,
+              ),
             );
           },
         ),

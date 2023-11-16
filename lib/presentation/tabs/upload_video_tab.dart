@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skywatch/domain/entities/country.dart';
 import 'package:skywatch/domain/services/logger_service.dart';
 import 'package:skywatch/presentation/components/country_selection_button.dart';
+import 'package:skywatch/presentation/components/system_localization_selector.dart';
 import 'package:skywatch/presentation/components/video_player.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
@@ -23,11 +24,15 @@ class UploadVideoTabScreen extends HookConsumerWidget {
     final photosPermissionAsync = ref.watch(photosPermissionServiceProvider);
     final pickedVideoFile = useState<File?>(null);
     final selectedCountry = useState<Country?>(null);
-    final openingFile = useState(false);
+    final openingFileNotifier = useState(false);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Upload Video'),
+        title: Text(context.l10n.upload_video_tab_title),
+        actions: const [
+          SystemLocalizationSelector(),
+          Gap(20),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -90,79 +95,84 @@ class UploadVideoTabScreen extends HookConsumerWidget {
                   return AspectRatio(
                     aspectRatio: 16 / 9,
                     child: ValueListenableBuilder(
-                      valueListenable: openingFile,
-                      builder: (context, value, child) {
-                        if (value) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        return Material(
-                          clipBehavior: Clip.antiAlias,
-                          borderRadius: BorderRadius.circular(10),
-                          child: InkWell(
+                      valueListenable: openingFileNotifier,
+                      builder: (context, openingFile, child) {
+                        return AbsorbPointer(
+                          absorbing: openingFile,
+                          child: Material(
+                            clipBehavior: Clip.antiAlias,
                             borderRadius: BorderRadius.circular(10),
-                            onTap: () {
-                              photosPermissionAsync.whenOrNull(
-                                skipError: true,
-                                skipLoadingOnRefresh: true,
-                                skipLoadingOnReload: true,
-                                data: (status) async {
-                                  openingFile.value = true;
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(10),
+                              onTap: () {
+                                photosPermissionAsync.whenOrNull(
+                                  skipError: true,
+                                  skipLoadingOnRefresh: true,
+                                  skipLoadingOnReload: true,
+                                  data: (status) async {
+                                    openingFileNotifier.value = true;
 
-                                  try {
-                                    if (!status.isGranted) {
-                                      final updatedStatus = await ref
-                                          .read(appRouterProvider)
-                                          .goToAskForPhotosPermissionScreen(
-                                            popWhenGranted: true,
-                                          );
+                                    try {
+                                      if (!status.isGranted) {
+                                        final updatedStatus = await ref
+                                            .read(appRouterProvider)
+                                            .goToAskForPhotosPermissionScreen(
+                                              popWhenGranted: true,
+                                            );
 
-                                      if (updatedStatus?.isGranted != true) {
-                                        return;
+                                        if (updatedStatus?.isGranted != true) {
+                                          return;
+                                        }
                                       }
-                                    }
 
-                                    pickedVideoFile.value = await ref
-                                            .read(videoPickerProvider)
-                                            .fromGalery() ??
-                                        pickedVideoFile.value;
-                                  } catch (ex) {
-                                    ref
-                                        .read(loggerProvider)
-                                        .error('Error picking video', ex);
-                                  } finally {
-                                    openingFile.value = false;
-                                  }
-                                },
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: context.colorScheme.surfaceVariant,
-                                  width: 2,
+                                      pickedVideoFile.value = await ref
+                                              .read(videoPickerProvider)
+                                              .fromGalery() ??
+                                          pickedVideoFile.value;
+                                    } catch (ex) {
+                                      ref
+                                          .read(loggerProvider)
+                                          .error('Error picking video', ex);
+                                    } finally {
+                                      openingFileNotifier.value = false;
+                                    }
+                                  },
+                                );
+                              },
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: context.colorScheme.surfaceVariant,
+                                    width: 2,
+                                  ),
                                 ),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.upload_sharp,
-                                    color: context.colorScheme.primary,
-                                    size: 40,
-                                  ),
-                                  Text(
-                                    'Select video to upload',
-                                    style: (context.textTheme.bodyMedium ??
-                                            const TextStyle())
-                                        .copyWith(
-                                      color: context.colorScheme.primary,
-                                    ),
-                                  ),
-                                ],
+                                child: Builder(builder: (context) {
+                                  if (openingFile) {
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  }
+                                  return Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.upload_sharp,
+                                        color: context.colorScheme.primary,
+                                        size: 40,
+                                      ),
+                                      Text(
+                                        context.l10n
+                                            .upload_video_tab_select_video_to_upload,
+                                        style: (context.textTheme.bodyMedium ??
+                                                const TextStyle())
+                                            .copyWith(
+                                          color: context.colorScheme.primary,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }),
                               ),
                             ),
                           ),

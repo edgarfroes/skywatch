@@ -84,7 +84,8 @@ class CountrySearchList extends HookConsumerWidget {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
-                  labelText: 'Search country name',
+                  labelText:
+                      context.l10n.country_search_list_filter_placeholder,
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   contentPadding: const EdgeInsets.all(0),
                   prefixIcon: const Icon(Icons.search),
@@ -106,12 +107,12 @@ class CountrySearchList extends HookConsumerWidget {
             },
             itemCount: searchResult.length,
           ),
-          const SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             sliver: SliverToBoxAdapter(
               child: Opacity(
                 opacity: 0.4,
-                child: Text('Other results'),
+                child: Text(context.l10n.country_search_list_other_results),
               ),
             ),
           ),
@@ -120,7 +121,10 @@ class CountrySearchList extends HookConsumerWidget {
           SliverPadding(
             padding: const EdgeInsets.all(20),
             sliver: SliverToBoxAdapter(
-              child: Text('Country "${filteredText.value}" not found'),
+              child: Text(
+                context.l10n
+                    .country_search_list_country_not_found(filteredText.value),
+              ),
             ),
           ),
         if (currentCountry != null)
@@ -182,6 +186,10 @@ class _CountryWidget extends ConsumerWidget {
           width: flagSize,
           countryCode: country.code,
           onErrorLoadingFlag: () {
+            if (!ref.context.mounted) {
+              return;
+            }
+
             ref.read(loggerProvider).error(
                   'Couldn\'t load flag for country ${country.name}',
                   ErrorLoadingCountryFlagException(),

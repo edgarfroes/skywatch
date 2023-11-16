@@ -8,8 +8,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/services/logger_service.dart';
 import 'package:skywatch/infrastructure/console_logger.dart';
 import 'package:skywatch/presentation/components/assets.gen.dart';
-import 'package:skywatch/presentation/components/retry.dart';
+import 'package:skywatch/presentation/components/retry_button.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 part 'splash_screen.g.dart';
 
@@ -30,7 +31,7 @@ class SplashScreen extends ConsumerWidget {
       body: watch.map(
         data: (_) => const _Loading(),
         error: (_) {
-          return Retry(
+          return RetryButton(
             onRetry: () => ref.refresh(loadInitialDataProvider.future),
           );
         },
@@ -75,8 +76,10 @@ Future<void> loadInitialData(LoadInitialDataRef ref) async {
 
   logger.info('Loading initial dependencies');
 
+  timeago.setLocaleMessages('pt', timeago.PtBrMessages());
+
   // Fake app loading screen.
-  await Future.delayed(const Duration(seconds: 2));
+  await Future.delayed(const Duration(seconds: 1));
 
   logger.info('Loaded dependencies');
 }

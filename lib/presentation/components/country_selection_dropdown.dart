@@ -57,7 +57,8 @@ class CountrySelectionDropdown extends HookConsumerWidget {
                 const Gap(5),
               ],
               Text(
-                selectedCountry.value?.name ?? 'Select country',
+                selectedCountry.value?.name ??
+                    context.l10n.country_selection_dropdown_select_country,
                 style: TextStyle(
                   color: context.colorScheme.onSurface,
                   fontWeight:

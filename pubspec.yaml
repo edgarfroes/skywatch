@@ -1,6 +1,6 @@
 name: skywatch
 description: A new Flutter project.
-publish_to: 'none' 
+publish_to: 'none'
 version: 1.0.0+1
 environment:
   sdk: '>=3.1.4 <4.0.0'
@@ -29,7 +29,10 @@ dependencies:
   video_player: ^2.8.1
   json_annotation: ^4.8.1
   shimmer: ^3.0.0
-  
+  flutter_localizations:
+    sdk: flutter
+  iso_countries: ^2.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,3 +73,12 @@ flutter_gen:
   output: lib/presentation/components
   integrations:
     flutter_svg: false
+
+flutter_intl:
+  enabled: true
+  arb_dir: lib/presentation/l10n/arb
+  output_dir: lib/presentation/l10n
+  class_name: Localization
+  main_locale: en_US
+  localizely:
+    project_id: f10bf105-5562-43c3-bde5-d6f4b7138b70

@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
 
 @RoutePage()
@@ -18,14 +19,14 @@ class HomeScreen extends StatelessWidget {
         return BottomNavigationBar(
           currentIndex: tabsRouter.activeIndex,
           onTap: tabsRouter.setActiveIndex,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              label: 'Weather',
-              icon: Icon(Icons.cloudy_snowing),
+              label: context.l10n.bottom_navbar_view_weather,
+              icon: const Icon(Icons.cloudy_snowing),
             ),
             BottomNavigationBarItem(
-              label: 'Upload Video',
-              icon: Icon(Icons.upload),
+              label: context.l10n.bottom_navbar_upload_video,
+              icon: const Icon(Icons.upload),
             ),
           ],
         );

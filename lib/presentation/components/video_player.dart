@@ -172,7 +172,7 @@ class _VideoPlayerController extends Hook<VideoPlayerController> {
 
 class _VideoPlayerControllerState
     extends HookState<VideoPlayerController, _VideoPlayerController> {
-  late VideoPlayerController controller;
+  late VideoPlayerController _controller;
 
   @override
   void initHook() {
@@ -191,15 +191,15 @@ class _VideoPlayerControllerState
   }
 
   _reinitialize(File file) async {
-    await controller.pause();
-    await controller.dispose();
+    await _controller.pause();
+    await _controller.dispose();
 
     _initialize(file);
   }
 
   _initialize(File file) async {
-    controller = VideoPlayerController.file(hook.file);
-    await controller.initialize();
+    _controller = VideoPlayerController.file(hook.file);
+    await _controller.initialize();
 
     setState(() {});
 
@@ -207,19 +207,19 @@ class _VideoPlayerControllerState
   }
 
   _startVideoOnInitialState() async {
-    await controller.setLooping(true);
-    await controller.setVolume(0);
-    await controller.play();
+    await _controller.setLooping(true);
+    await _controller.setVolume(0);
+    await _controller.play();
   }
 
   @override
   VideoPlayerController build(BuildContext context) {
-    return controller;
+    return _controller;
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
 
     super.dispose();
   }
