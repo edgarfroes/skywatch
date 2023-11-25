@@ -8,9 +8,10 @@ class WeatherForecast with _$WeatherForecast {
   WeatherForecast._();
 
   factory WeatherForecast({
+    required String id,
     required String description,
-    required double temperature,
     required String countryCode,
+    required String videoUrl,
     required DateTime createdAt,
     required WeatherForecastClassification classification,
   }) = _WeatherForecast;

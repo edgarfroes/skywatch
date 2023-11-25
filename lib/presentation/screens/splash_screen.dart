@@ -8,8 +8,10 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:skywatch/domain/services/logger_service.dart';
 import 'package:skywatch/infrastructure/console_logger.dart';
 import 'package:skywatch/presentation/components/assets.gen.dart';
+import 'package:skywatch/presentation/components/async_value_builder.dart';
 import 'package:skywatch/presentation/components/retry_button.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
+import 'package:skywatch/presentation/services/current_locale_service.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 part 'splash_screen.g.dart';
@@ -20,22 +22,21 @@ class SplashScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final watch = ref.watch(loadInitialDataProvider)
-      ..whenOrNull(
-        data: (_) {
+    return Scaffold(
+      body: AsyncValueBuilder(
+        async: ref.watch(loadInitialDataProvider),
+        onDataCallback: (data) {
           ref.read(appRouterProvider).goToHomeScreen();
         },
-      );
-
-    return Scaffold(
-      body: watch.map(
-        data: (_) => const _Loading(),
-        error: (_) {
+        builder: (BuildContext context, _) {
+          return const _Loading();
+        },
+        errorBuilder: (_) {
           return RetryButton(
             onRetry: () => ref.refresh(loadInitialDataProvider.future),
           );
         },
-        loading: (_) => const _Loading(),
+        loadingBuilder: (_) => const _Loading(),
       ),
     );
   }
@@ -77,6 +78,8 @@ Future<void> loadInitialData(LoadInitialDataRef ref) async {
   logger.info('Loading initial dependencies');
 
   timeago.setLocaleMessages('pt', timeago.PtBrMessages());
+
+  await ref.read(currentLocaleServiceProvider.future);
 
   // Fake app loading screen.
   await Future.delayed(const Duration(seconds: 1));

@@ -11,13 +11,18 @@ class CountrySelectionDropdown extends HookConsumerWidget {
   const CountrySelectionDropdown({
     super.key,
     required this.onCountrySelect,
+    this.initialValue,
   });
 
+  final Country? initialValue;
   final Function(Country? country) onCountrySelect;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedCountry = useState<Country?>(null);
+    if (initialValue != selectedCountry.value) {
+      selectedCountry.value = initialValue;
+    }
 
     return Material(
       borderRadius: BorderRadius.circular(100),

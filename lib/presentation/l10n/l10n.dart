@@ -160,6 +160,16 @@ class Localization {
     );
   }
 
+  /// `An error has occurred`
+  String get generic_error {
+    return Intl.message(
+      'An error has occurred',
+      name: 'generic_error',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Allow photos access`
   String get photo_permission_screen_permission_allow_photos_access {
     return Intl.message(
@@ -220,6 +230,46 @@ class Localization {
     );
   }
 
+  /// `Please select a language`
+  String get system_localization_selector_title {
+    return Intl.message(
+      'Please select a language',
+      name: 'system_localization_selector_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get upload_video_tab_description {
+    return Intl.message(
+      'Description',
+      name: 'upload_video_tab_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error while saving data. Please try again`
+  String get upload_video_tab_error {
+    return Intl.message(
+      'Error while saving data. Please try again',
+      name: 'upload_video_tab_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share`
+  String get upload_video_tab_save_button {
+    return Intl.message(
+      'Share',
+      name: 'upload_video_tab_save_button',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Select video to upload`
   String get upload_video_tab_select_video_to_upload {
     return Intl.message(
@@ -230,11 +280,121 @@ class Localization {
     );
   }
 
+  /// `Data sent succesfully`
+  String get upload_video_tab_success {
+    return Intl.message(
+      'Data sent succesfully',
+      name: 'upload_video_tab_success',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Upload Video`
   String get upload_video_tab_title {
     return Intl.message(
       'Upload Video',
       name: 'upload_video_tab_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Clear`
+  String get weather_classification_clear {
+    return Intl.message(
+      'Clear',
+      name: 'weather_classification_clear',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cloudy`
+  String get weather_classification_cloudy {
+    return Intl.message(
+      'Cloudy',
+      name: 'weather_classification_cloudy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Overcast day rain`
+  String get weather_classification_overcast_day_rain {
+    return Intl.message(
+      'Overcast day rain',
+      name: 'weather_classification_overcast_day_rain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Partly cloudy`
+  String get weather_classification_partly_cloudy {
+    return Intl.message(
+      'Partly cloudy',
+      name: 'weather_classification_partly_cloudy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rainy`
+  String get weather_classification_rainy {
+    return Intl.message(
+      'Rainy',
+      name: 'weather_classification_rainy',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select weather condition`
+  String get weather_classification_selector_empty_title {
+    return Intl.message(
+      'Select weather condition',
+      name: 'weather_classification_selector_empty_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `tap to change`
+  String get weather_classification_selector_tap_to_change {
+    return Intl.message(
+      'tap to change',
+      name: 'weather_classification_selector_tap_to_change',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `tap to select`
+  String get weather_classification_selector_tap_to_select {
+    return Intl.message(
+      'tap to select',
+      name: 'weather_classification_selector_tap_to_select',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `How's the weather?`
+  String get weather_classification_selector_title {
+    return Intl.message(
+      'How\'s the weather?',
+      name: 'weather_classification_selector_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Snowy`
+  String get weather_classification_snowy {
+    return Intl.message(
+      'Snowy',
+      name: 'weather_classification_snowy',
       desc: '',
       args: [],
     );
@@ -255,6 +415,26 @@ class Localization {
     return Intl.message(
       'An error has occurred, please try again',
       name: 'weather_forecast_tab_error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Posted in {countryName}`
+  String weather_forecast_tab_posted_from(Object countryName) {
+    return Intl.message(
+      'Posted in $countryName',
+      name: 'weather_forecast_tab_posted_from',
+      desc: '',
+      args: [countryName],
+    );
+  }
+
+  /// `Update`
+  String get weather_forecast_tab_refresh {
+    return Intl.message(
+      'Update',
+      name: 'weather_forecast_tab_refresh',
       desc: '',
       args: [],
     );

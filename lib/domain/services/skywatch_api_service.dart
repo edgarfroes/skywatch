@@ -70,7 +70,10 @@ class SkywatchApiService {
   }) async {
     final response = await http.post(
       Uri.parse('$apiUrl$endpoint'),
-      body: data,
+      body: jsonEncode(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     );
 
     logger.info('HTTP Request: ${response.request}');
@@ -96,7 +99,7 @@ SkywatchApiService skywatchApiService(SkywatchApiServiceRef ref) {
   return SkywatchApiService(
     apiUrl: const String.fromEnvironment(
       'SKYWATCH_API_URL',
-      defaultValue: 'http://192.168.1.14:8080',
+      defaultValue: 'http://localhost:8080',
     ),
     logger: ref.read(loggerProvider),
   );

@@ -9,4 +9,5 @@ extension BuildContextExtensions on BuildContext {
   Size get screenSize => mediaQuery.size;
   EdgeInsets get safeAreaPadding => mediaQuery.padding;
   Localization get l10n => Localization.of(this);
+  FocusScopeNode get focusScope => FocusScope.of(this);
 }

@@ -2,7 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:skywatch/domain/entities/country.dart';
-import 'package:skywatch/domain/services/get_countries_service.dart';
+import 'package:skywatch/domain/services/get_countries_for_current_locale_service.dart';
 import 'package:skywatch/presentation/components/async_value_absorb_pointer.dart';
 import 'package:skywatch/presentation/components/country_search_list.dart';
 import 'package:skywatch/presentation/components/retry_button.dart';
@@ -10,7 +10,6 @@ import 'package:skywatch/presentation/components/skeleton_loader.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:skywatch/presentation/l10n/l10n.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
-import 'package:skywatch/presentation/services/current_locale_service.dart';
 
 @RoutePage()
 class CountrySelectionScreen extends ConsumerWidget {
@@ -23,10 +22,8 @@ class CountrySelectionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentLocale = ref.watch(currentLocaleServiceProvider);
-
     final countriesAsync =
-        ref.watch(getCountriesServiceProvider(currentLocale));
+        ref.watch(getCountriesForCurrentLocaleServiceProvider);
 
     final appRouter = ref.read(appRouterProvider);
 
@@ -40,7 +37,7 @@ class CountrySelectionScreen extends ConsumerWidget {
               return RetryButton(
                 title: context.l10n.country_selection_screen_empty_result,
                 onRetry: () =>
-                    ref.refresh(getCountriesServiceProvider(currentLocale)),
+                    ref.refresh(getCountriesForCurrentLocaleServiceProvider),
               );
             }
 
@@ -75,7 +72,7 @@ class CountrySelectionScreen extends ConsumerWidget {
 
             return RetryButton(
               onRetry: () => ref.refresh(
-                getCountriesServiceProvider(currentLocale).future,
+                getCountriesForCurrentLocaleServiceProvider.future,
               ),
             );
           },

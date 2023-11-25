@@ -29,8 +29,14 @@ class AppRouter extends _$AppRouter {
           transitionsBuilder: TransitionsBuilders.fadeIn,
           durationInMilliseconds: 400,
           children: [
-            AutoRoute(page: WeatherForecastTabRoute.page),
-            AutoRoute(page: UploadVideoTabRoute.page),
+            AutoRoute(
+              page: WeatherForecastTabRoute.page,
+              maintainState: false,
+            ),
+            AutoRoute(
+              page: UploadVideoTabRoute.page,
+              maintainState: false,
+            ),
           ],
         ),
         AutoRoute(page: CountrySelectionRoute.page),
@@ -39,8 +45,10 @@ class AppRouter extends _$AppRouter {
 
   Future<void> goToHomeScreen() async => await replace(const HomeRoute());
 
-  Future<void> goToUploadVideoTab() async =>
-      await replace(const UploadVideoTabRoute());
+  Future<void> goToUploadVideoTab() => navigate(const UploadVideoTabRoute());
+
+  Future<void> goToWeatherForecastTab() =>
+      navigate(const WeatherForecastTabRoute());
 
   Future<PermissionStatus?> goToAskForPhotosPermissionScreen({
     bool popWhenGranted = false,

@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:skywatch/presentation/components/async_value_builder.dart';
 import 'package:skywatch/presentation/components/retry_button.dart';
 import 'package:skywatch/presentation/extensions/build_context_extensions.dart';
 import 'package:skywatch/presentation/navigation/app_router.dart';
@@ -18,14 +19,6 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final photosPermission = ref.watch(photosPermissionServiceProvider);
-
-    photosPermission.whenData((value) {
-      if (value.isGranted) {
-        ref.read(appRouterProvider).pop(value);
-      }
-    });
-
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
@@ -56,8 +49,17 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,
-                  child: photosPermission.when(
-                    data: (status) {
+                  child: AsyncValueBuilder(
+                    async: ref.watch(photosPermissionServiceProvider),
+                    onDataCallback: (status) {
+                      if (status.isGranted) {
+                        ref.read(appRouterProvider).pop(status);
+                      }
+                    },
+                    builder: (
+                      BuildContext context,
+                      PermissionStatus status,
+                    ) {
                       if (status.isGranted) {
                         return OutlinedButton(
                           onPressed: null,
@@ -69,11 +71,13 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
                       if (status.isPermanentlyDenied) {
                         return OutlinedButton(
                           onPressed: () async {
-                            ref
-                                .read(openAppPermissionSettingsProvider)
-                                .whenData((opened) {
-                              if (opened) {}
-                            });
+                            final opened = await ref
+                                .read(openAppPermissionSettingsProvider.future);
+
+                            if (opened) {
+                              return ref
+                                  .refresh(photosPermissionServiceProvider);
+                            }
                           },
                           child: Text(
                             context.l10n
@@ -92,13 +96,14 @@ class AskForPhotosPermissionScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                    error: (ex, stackTrace) {
+                    errorBuilder: (context) {
                       return RetryButton(
                         onRetry: () =>
                             ref.refresh(photosPermissionServiceProvider),
                       );
                     },
-                    loading: () => const CircularProgressIndicator(),
+                    loadingBuilder: (context) =>
+                        const CircularProgressIndicator(),
                   ),
                 ),
               ),
